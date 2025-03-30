@@ -6,6 +6,7 @@ const socket = io('https://chat-server-lacd.onrender.com');
 
 function App() {
   // 用户信息状态
+  const [nickname, setNickname] = useState('');
   const [age, setAge] = useState('');
   const [gender, setGender] = useState('男');
   const [isJoined, setIsJoined] = useState(false);
@@ -13,19 +14,36 @@ function App() {
   // 聊天室状态
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
+  const [onlineCount, setOnlineCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
   
   // 聊天窗口引用，用于滚动到底部
   const messagesEndRef = useRef(null);
+  const notificationsEndRef = useRef(null);
 
   // 监听接收消息事件
   useEffect(() => {
     socket.on('receiveMessage', (newMessage) => {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
+
+    // 监听用户加入事件
+    socket.on('userJoined', (data) => {
+      setOnlineCount(data.onlineCount);
+      addNotification(`${data.user.nickname} (${data.user.age}, ${data.user.gender}) 已加入聊天室`);
+    });
+
+    // 监听用户离开事件
+    socket.on('userLeft', (data) => {
+      setOnlineCount(data.onlineCount);
+      addNotification(`${data.user.nickname} (${data.user.age}, ${data.user.gender}) 已離開聊天室`);
+    });
     
     // 组件卸载时断开连接
     return () => {
       socket.off('receiveMessage');
+      socket.off('userJoined');
+      socket.off('userLeft');
     };
   }, []);
 
@@ -36,12 +54,40 @@ function App() {
     }
   }, [messages]);
 
+  // 通知更新时，滚动到底部
+  useEffect(() => {
+    if (notificationsEndRef.current) {
+      notificationsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [notifications]);
+
+  // 添加通知
+  const addNotification = (text) => {
+    setNotifications(prev => [...prev, { id: Date.now(), text }]);
+    // 5秒后自动移除通知
+    setTimeout(() => {
+      setNotifications(prev => prev.filter(n => n.id !== Date.now()));
+    }, 5000);
+  };
+
   // 处理进入聊天室
   const handleJoin = () => {
-    if (age.trim() === '') {
-      alert('请输入年龄');
+    if (nickname.trim() === '') {
+      alert('請輸入暱稱');
       return;
     }
+    if (age.trim() === '') {
+      alert('請輸入年齡');
+      return;
+    }
+    
+    const userInfo = {
+      nickname,
+      age,
+      gender
+    };
+    
+    socket.emit('userJoin', userInfo);
     setIsJoined(true);
   };
 
@@ -51,7 +97,7 @@ function App() {
     if (message.trim() === '') return;
     
     const userMessage = {
-      user: `匿名 (${age}, ${gender})`,
+      user: `${nickname} (${age}, ${gender})`,
       text: message
     };
     
@@ -94,6 +140,15 @@ function App() {
     borderRadius: '5px'
   };
 
+  const notificationStyle = {
+    margin: '5px 0',
+    padding: '5px',
+    backgroundColor: '#e3f2fd',
+    borderRadius: '3px',
+    fontSize: '0.9em',
+    color: '#1976d2'
+  };
+
   const formStyle = {
     display: 'flex',
     padding: '10px'
@@ -116,12 +171,28 @@ function App() {
     cursor: 'pointer'
   };
 
+  const headerStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '10px',
+    borderBottom: '1px solid #eee'
+  };
+
   // 登录页面
   if (!isJoined) {
     return (
       <div style={loginStyle}>
         <h2 style={{ textAlign: 'center' }}>匿名聊天室</h2>
-        <label style={{ marginBottom: '5px' }}>年龄:</label>
+        <label style={{ marginBottom: '5px' }}>暱稱:</label>
+        <input
+          type="text"
+          value={nickname}
+          onChange={(e) => setNickname(e.target.value)}
+          style={{ ...inputStyle, marginBottom: '10px' }}
+        />
+        
+        <label style={{ marginBottom: '5px' }}>年齡:</label>
         <input
           type="text"
           value={age}
@@ -129,7 +200,7 @@ function App() {
           style={{ ...inputStyle, marginBottom: '10px' }}
         />
         
-        <label style={{ marginBottom: '5px' }}>性别:</label>
+        <label style={{ marginBottom: '5px' }}>性別:</label>
         <select
           value={gender}
           onChange={(e) => setGender(e.target.value)}
@@ -141,7 +212,7 @@ function App() {
         </select>
         
         <button onClick={handleJoin} style={buttonStyle}>
-          进入聊天室
+          進入聊天室
         </button>
       </div>
     );
@@ -150,9 +221,10 @@ function App() {
   // 聊天室页面
   return (
     <div style={chatRoomStyle}>
-      <h2 style={{ textAlign: 'center', padding: '10px', margin: '0', borderBottom: '1px solid #eee' }}>
-        匿名聊天室
-      </h2>
+      <div style={headerStyle}>
+        <h2 style={{ margin: '0' }}>匿名聊天室</h2>
+        <div>目前線上：{onlineCount} 人</div>
+      </div>
       
       <div style={messagesContainerStyle}>
         {messages.map((msg, index) => (
@@ -164,16 +236,25 @@ function App() {
         <div ref={messagesEndRef} />
       </div>
       
+      <div style={{ padding: '10px', backgroundColor: '#f8f9fa', borderBottom: '1px solid #eee' }}>
+        {notifications.map(notification => (
+          <div key={notification.id} style={notificationStyle}>
+            {notification.text}
+          </div>
+        ))}
+        <div ref={notificationsEndRef} />
+      </div>
+      
       <form onSubmit={handleSendMessage} style={formStyle}>
         <input
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="输入消息..."
+          placeholder="輸入訊息..."
           style={inputStyle}
         />
         <button type="submit" style={buttonStyle}>
-          发送
+          發送
         </button>
       </form>
     </div>
