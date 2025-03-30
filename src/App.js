@@ -54,6 +54,10 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [onlineCount, setOnlineCount] = useState(0);
   
+  // 添加连接状态
+  const [isConnected, setIsConnected] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(true);
+  
   // 设置状态
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState('medium');
@@ -128,6 +132,30 @@ function App() {
       socket.off('online count');
     };
   }, [soundEnabled]);
+
+  // 监听Socket连接状态
+  useEffect(() => {
+    socket.on('connect', () => {
+      setIsConnected(true);
+      setIsConnecting(false);
+    });
+
+    socket.on('disconnect', () => {
+      setIsConnected(false);
+      setIsConnecting(true);
+    });
+
+    socket.on('connect_error', () => {
+      setIsConnected(false);
+      setIsConnecting(true);
+    });
+
+    return () => {
+      socket.off('connect');
+      socket.off('disconnect');
+      socket.off('connect_error');
+    };
+  }, []);
 
   // 处理键盘事件
   useEffect(() => {
@@ -393,6 +421,22 @@ function App() {
   if (!isJoined) {
     return (
       <div style={loginStyle}>
+        {isConnecting && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            backgroundColor: '#4CAF50',
+            color: 'white',
+            padding: '10px',
+            textAlign: 'center',
+            zIndex: 1000,
+            animation: 'pulse 2s infinite'
+          }}>
+            正在連線到伺服器...
+          </div>
+        )}
         <h2 style={{ 
           textAlign: 'center',
           fontSize: fontSizes[fontSize].heading,
@@ -442,6 +486,22 @@ function App() {
   // 聊天室页面
   return (
     <>
+      {isConnecting && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: '#4CAF50',
+          color: 'white',
+          padding: '10px',
+          textAlign: 'center',
+          zIndex: 1000,
+          animation: 'pulse 2s infinite'
+        }}>
+          正在連線到伺服器...
+        </div>
+      )}
       <div style={chatRoomStyle} className="chat-container">
         <div style={headerStyle}>
           <h2 style={{ 
