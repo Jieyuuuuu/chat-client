@@ -1,0 +1,66 @@
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.message {
+  animation: fadeIn 0.3s ease;
+}
+
+.settings-panel {
+  animation: slideIn 0.3s ease;
+}
+
+.setting-item {
+  margin: 20px 0;
+  padding: 15px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.setting-item label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.setting-item select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  margin-top: 5px;
+}
+
+.setting-item input[type="checkbox"] {
+  margin-left: 10px;
+}
+
+.dark-mode {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+.chat-container {
+  transition: all 0.3s ease;
+}
+
+.message-bubble {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.message-bubble:hover {
+  transform: translateY(-2px);
+}
+
+.settings-button {
+  transition: all 0.3s ease;
+}
+
+.settings-button:hover {
+  transform: rotate(45deg);
+} 
