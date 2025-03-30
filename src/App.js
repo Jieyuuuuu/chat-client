@@ -24,19 +24,35 @@ function App() {
   // 监听接收消息事件
   useEffect(() => {
     socket.on('receiveMessage', (newMessage) => {
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      setMessages((prevMessages) => [...prevMessages, {
+        ...newMessage,
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'user'
+      }]);
     });
 
     // 监听用户加入事件
     socket.on('userJoined', (data) => {
       setOnlineCount(data.onlineCount);
       addNotification(`${data.user.nickname} (${data.user.age}, ${data.user.gender}) 已加入聊天室`);
+      setMessages(prev => [...prev, {
+        user: '系統',
+        text: `${data.user.nickname} (${data.user.age}, ${data.user.gender}) 已加入聊天室`,
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'system'
+      }]);
     });
 
     // 监听用户离开事件
     socket.on('userLeft', (data) => {
       setOnlineCount(data.onlineCount);
       addNotification(`${data.user.nickname} (${data.user.age}, ${data.user.gender}) 已離開聊天室`);
+      setMessages(prev => [...prev, {
+        user: '系統',
+        text: `${data.user.nickname} (${data.user.age}, ${data.user.gender}) 已離開聊天室`,
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'system'
+      }]);
     });
     
     // 组件卸载时断开连接
@@ -98,7 +114,9 @@ function App() {
     
     const userMessage = {
       user: `${nickname} (${age}, ${gender})`,
-      text: message
+      text: message,
+      timestamp: new Date().toLocaleTimeString(),
+      type: 'user'
     };
     
     socket.emit('sendMessage', userMessage);
@@ -140,6 +158,13 @@ function App() {
     borderRadius: '5px'
   };
 
+  const systemMessageStyle = {
+    ...messageStyle,
+    backgroundColor: '#e3f2fd',
+    color: '#1976d2',
+    textAlign: 'center'
+  };
+
   const notificationStyle = {
     margin: '5px 0',
     padding: '5px',
@@ -177,6 +202,12 @@ function App() {
     alignItems: 'center',
     padding: '10px',
     borderBottom: '1px solid #eee'
+  };
+
+  const timestampStyle = {
+    fontSize: '0.8em',
+    color: '#666',
+    marginTop: '4px'
   };
 
   // 登录页面
@@ -228,9 +259,10 @@ function App() {
       
       <div style={messagesContainerStyle}>
         {messages.map((msg, index) => (
-          <div key={index} style={messageStyle}>
+          <div key={index} style={msg.type === 'system' ? systemMessageStyle : messageStyle}>
             <div style={{ fontWeight: 'bold' }}>{msg.user}</div>
             <div>{msg.text}</div>
+            <div style={timestampStyle}>{msg.timestamp}</div>
           </div>
         ))}
         <div ref={messagesEndRef} />
