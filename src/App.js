@@ -279,8 +279,11 @@ function App() {
           onChange={(e) => setChatBackground(e.target.value)}
         >
           <option value="default">預設</option>
-          <option value="gradient1">漸層 1</option>
-          <option value="gradient2">漸層 2</option>
+          <option value="gradient1">薄暮漸層</option>
+          <option value="gradient2">春意漸層</option>
+          <option value="gradient3">海洋漸層</option>
+          <option value="gradient4">紫霞漸層</option>
+          <option value="gradient5">金秋漸層</option>
         </select>
       </div>
 
@@ -333,11 +336,17 @@ function App() {
     padding: '20px',
     backgroundColor: currentTheme.secondary,
     backgroundImage: chatBackground === 'gradient1' 
-      ? 'linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%)'
+      ? 'linear-gradient(120deg, #f6d365 0%, #fda085 100%)'
       : chatBackground === 'gradient2'
-      ? 'linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)'
+      ? 'linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)'
+      : chatBackground === 'gradient3'
+      ? 'linear-gradient(120deg, #0093E9 0%, #80D0C7 100%)'
+      : chatBackground === 'gradient4'
+      ? 'linear-gradient(120deg, #8EC5FC 0%, #E0C3FC 100%)'
+      : chatBackground === 'gradient5'
+      ? 'linear-gradient(120deg, #F4D03F 0%, #16A085 100%)'
       : 'none',
-    color: currentTheme.text,
+    color: chatBackground === 'default' ? currentTheme.text : '#333333',
     fontSize: fontSizes[fontSize].message,
     transition: 'all 0.3s ease'
   };
