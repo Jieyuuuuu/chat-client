@@ -1,19 +1,65 @@
+/* 全局樣式 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.5;
+  background-color: #f7f7f7;
+}
+
+/* 動畫效果 */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { 
+    opacity: 0; 
+    transform: translateY(10px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideIn {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
+  from { 
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to { 
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* 消息樣式 */
 .message {
   animation: fadeIn 0.3s ease;
+  position: relative;
 }
 
+.message:hover {
+  transform: translateY(-2px);
+  transition: transform 0.2s ease;
+}
+
+/* 系統消息特殊效果 */
+.message.message-bubble[style*="system"] {
+  animation: pulse 2s infinite;
+}
+
+/* 設置面板 */
 .settings-panel {
   animation: slideIn 0.3s ease;
+  backdrop-filter: blur(10px);
 }
 
 .setting-item {
@@ -23,9 +69,14 @@
   transition: all 0.3s ease;
 }
 
+.setting-item:hover {
+  transform: translateX(5px);
+}
+
 .setting-item label {
   display: block;
   margin-bottom: 10px;
+  font-weight: 500;
 }
 
 .setting-item select {
@@ -33,21 +84,27 @@
   padding: 8px;
   border-radius: 5px;
   margin-top: 5px;
+  cursor: pointer;
 }
 
 .setting-item input[type="checkbox"] {
   margin-left: 10px;
+  transform: scale(1.2);
+  cursor: pointer;
 }
 
+/* 深色模式 */
 .dark-mode {
   background-color: #1a1a1a;
   color: #ffffff;
 }
 
+/* 聊天容器 */
 .chat-container {
   transition: all 0.3s ease;
 }
 
+/* 消息氣泡 */
 .message-bubble {
   transition: all 0.3s ease;
   position: relative;
@@ -55,12 +112,42 @@
 
 .message-bubble:hover {
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
+/* 設置按鈕 */
 .settings-button {
   transition: all 0.3s ease;
 }
 
 .settings-button:hover {
-  transform: rotate(45deg);
+  transform: rotate(90deg);
+  opacity: 0.8;
+}
+
+/* 滾動條樣式 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.3);
+}
+
+/* 深色模式滾動條 */
+.dark-mode ::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+}
+
+.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.3);
 } 

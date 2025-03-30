@@ -261,18 +261,21 @@ function App() {
 
   const chatRoomStyle = {
     maxWidth: '800px',
-    margin: '20px auto',
+    height: '100vh',
+    margin: '0 auto',
     border: `1px solid ${currentTheme.border}`,
     borderRadius: '10px',
     boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
     backgroundColor: currentTheme.background,
     position: 'relative',
     overflow: 'hidden',
-    transition: 'all 0.3s ease'
+    transition: 'all 0.3s ease',
+    display: 'flex',
+    flexDirection: 'column'
   };
 
   const messagesContainerStyle = {
-    height: '500px',
+    flex: 1,
     overflowY: 'auto',
     padding: '20px',
     backgroundColor: currentTheme.secondary,
@@ -288,18 +291,24 @@ function App() {
 
   const messageStyle = {
     margin: '10px 0',
-    padding: '12px',
-    backgroundColor: currentTheme.secondary,
+    padding: '12px 16px',
+    backgroundColor: isDarkMode ? '#2d3748' : '#ffffff',
     borderRadius: '10px',
     boxShadow: '0 2px 5px rgba(0,0,0,0.05)',
-    transition: 'all 0.3s ease'
+    transition: 'all 0.3s ease',
+    maxWidth: '80%'
   };
 
   const systemMessageStyle = {
-    ...messageStyle,
-    backgroundColor: isDarkMode ? '#1a365d' : '#e3f2fd',
-    color: isDarkMode ? '#90cdf4' : '#1976d2',
-    textAlign: 'center'
+    margin: '10px auto',
+    padding: '8px 16px',
+    backgroundColor: isDarkMode ? 'rgba(66, 153, 225, 0.2)' : 'rgba(66, 153, 225, 0.1)',
+    color: isDarkMode ? '#90cdf4' : '#2b6cb0',
+    borderRadius: '20px',
+    fontSize: '0.9em',
+    textAlign: 'center',
+    maxWidth: '90%',
+    border: `1px solid ${isDarkMode ? 'rgba(66, 153, 225, 0.3)' : 'rgba(66, 153, 225, 0.2)'}`,
   };
 
   const formStyle = {
@@ -307,7 +316,8 @@ function App() {
     padding: '15px',
     backgroundColor: currentTheme.background,
     borderTop: `1px solid ${currentTheme.border}`,
-    transition: 'all 0.3s ease'
+    transition: 'all 0.3s ease',
+    height: '70px'
   };
 
   const inputStyle = {
@@ -344,7 +354,8 @@ function App() {
     padding: '15px 20px',
     backgroundColor: currentTheme.background,
     borderBottom: `1px solid ${currentTheme.border}`,
-    transition: 'all 0.3s ease'
+    transition: 'all 0.3s ease',
+    height: '60px'
   };
 
   const timestampStyle = {
@@ -416,7 +427,10 @@ function App() {
               cursor: 'pointer',
               fontSize: '24px',
               color: currentTheme.text,
-              padding: '5px'
+              padding: '5px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
           >
             ⚙️
@@ -433,9 +447,21 @@ function App() {
             className="message message-bubble"
             style={msg.type === 'system' ? systemMessageStyle : messageStyle}
           >
-            <div style={{ fontWeight: 'bold' }}>{msg.user}</div>
-            <div>{msg.text}</div>
-            <div style={timestampStyle}>{msg.timestamp}</div>
+            {msg.type !== 'system' && (
+              <div style={{ 
+                fontWeight: 'bold',
+                marginBottom: '4px',
+                color: isDarkMode ? '#e2e8f0' : '#2d3748'
+              }}>{msg.user}</div>
+            )}
+            <div style={{
+              wordBreak: 'break-word',
+              lineHeight: '1.5'
+            }}>{msg.text}</div>
+            <div style={{
+              ...timestampStyle,
+              textAlign: msg.type === 'system' ? 'center' : 'right'
+            }}>{msg.timestamp}</div>
           </div>
         ))}
         <div ref={messagesEndRef} />
@@ -453,9 +479,18 @@ function App() {
             }
           }}
           placeholder="輸入訊息..."
-          style={inputStyle}
+          style={{
+            ...inputStyle,
+            height: '40px'
+          }}
         />
-        <button type="submit" style={buttonStyle}>
+        <button type="submit" style={{
+          ...buttonStyle,
+          height: '40px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
           發送
         </button>
       </form>
