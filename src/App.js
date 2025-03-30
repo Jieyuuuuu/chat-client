@@ -15,11 +15,9 @@ function App() {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [onlineCount, setOnlineCount] = useState(0);
-  const [notifications, setNotifications] = useState([]);
   
   // 聊天窗口引用，用于滚动到底部
   const messagesEndRef = useRef(null);
-  const notificationsEndRef = useRef(null);
 
   // 监听接收消息事件
   useEffect(() => {
@@ -34,7 +32,6 @@ function App() {
     // 监听用户加入事件
     socket.on('userJoined', (data) => {
       setOnlineCount(data.onlineCount);
-      addNotification(`${data.user.nickname} (${data.user.age}, ${data.user.gender}) 已加入聊天室`);
       setMessages(prev => [...prev, {
         user: '系統',
         text: `${data.user.nickname} (${data.user.age}, ${data.user.gender}) 已加入聊天室`,
@@ -46,7 +43,6 @@ function App() {
     // 监听用户离开事件
     socket.on('userLeft', (data) => {
       setOnlineCount(data.onlineCount);
-      addNotification(`${data.user.nickname} (${data.user.age}, ${data.user.gender}) 已離開聊天室`);
       setMessages(prev => [...prev, {
         user: '系統',
         text: `${data.user.nickname} (${data.user.age}, ${data.user.gender}) 已離開聊天室`,
@@ -69,22 +65,6 @@ function App() {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
-
-  // 通知更新时，滚动到底部
-  useEffect(() => {
-    if (notificationsEndRef.current) {
-      notificationsEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [notifications]);
-
-  // 添加通知
-  const addNotification = (text) => {
-    setNotifications(prev => [...prev, { id: Date.now(), text }]);
-    // 5秒后自动移除通知
-    setTimeout(() => {
-      setNotifications(prev => prev.filter(n => n.id !== Date.now()));
-    }, 5000);
-  };
 
   // 处理进入聊天室
   const handleJoin = () => {
@@ -163,15 +143,6 @@ function App() {
     backgroundColor: '#e3f2fd',
     color: '#1976d2',
     textAlign: 'center'
-  };
-
-  const notificationStyle = {
-    margin: '5px 0',
-    padding: '5px',
-    backgroundColor: '#e3f2fd',
-    borderRadius: '3px',
-    fontSize: '0.9em',
-    color: '#1976d2'
   };
 
   const formStyle = {
@@ -266,15 +237,6 @@ function App() {
           </div>
         ))}
         <div ref={messagesEndRef} />
-      </div>
-      
-      <div style={{ padding: '10px', backgroundColor: '#f8f9fa', borderBottom: '1px solid #eee' }}>
-        {notifications.map(notification => (
-          <div key={notification.id} style={notificationStyle}>
-            {notification.text}
-          </div>
-        ))}
-        <div ref={notificationsEndRef} />
       </div>
       
       <form onSubmit={handleSendMessage} style={formStyle}>
