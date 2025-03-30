@@ -231,44 +231,63 @@ function App() {
          }}>
       <div style={{ 
         display: 'flex', 
-        justifyContent: 'space-between', 
+        justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: '20px'
       }}>
-        <h3 style={{ color: isDarkMode ? themes.dark.text : themes.light.text }}>設置</h3>
+        <h3 style={{ margin: 0, color: isDarkMode ? themes.dark.text : themes.light.text }}>設置</h3>
         <button
           onClick={() => setIsSettingsOpen(false)}
           style={{
             background: 'none',
             border: 'none',
-            cursor: 'pointer',
-            fontSize: '20px',
             color: isDarkMode ? themes.dark.text : themes.light.text,
-            padding: '5px'
+            cursor: 'pointer',
+            fontSize: '20px'
           }}
         >
           ✕
         </button>
       </div>
-      
-      <div className="setting-item">
-        <label>深色模式</label>
+
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{ 
+          display: 'block', 
+          marginBottom: '10px',
+          color: isDarkMode ? themes.dark.text : themes.light.text 
+        }}>
+          深色模式
+        </label>
         <input
           type="checkbox"
           checked={isDarkMode}
           onChange={(e) => setIsDarkMode(e.target.checked)}
+          style={{ cursor: 'pointer' }}
         />
       </div>
 
-      <div className="setting-item">
-        <label>字體大小</label>
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{ 
+          display: 'block', 
+          marginBottom: '10px',
+          color: isDarkMode ? themes.dark.text : themes.light.text 
+        }}>
+          字體大小
+        </label>
         <select
           value={fontSize}
           onChange={(e) => setFontSize(e.target.value)}
+          style={{
+            ...inputStyle,
+            width: '100%',
+            cursor: 'pointer'
+          }}
         >
           <option value="small">小</option>
           <option value="medium">中</option>
           <option value="large">大</option>
+          <option value="xlarge">超大</option>
+          <option value="xxlarge">巨大</option>
         </select>
       </div>
 
@@ -297,6 +316,48 @@ function App() {
       </div>
     </div>
   );
+
+  // 修改字體大小邏輯
+  const getFontSize = () => {
+    switch (fontSize) {
+      case 'small':
+        return '14px';
+      case 'medium':
+        return '16px';
+      case 'large':
+        return '18px';
+      case 'xlarge':
+        return '20px';
+      case 'xxlarge':
+        return '24px';
+      default:
+        return '16px';
+    }
+  };
+
+  // 修改消息樣式
+  const messageStyle = {
+    padding: '10px 15px',
+    marginBottom: '10px',
+    borderRadius: '10px',
+    backgroundColor: isDarkMode ? themes.dark.messageBg : themes.light.messageBg,
+    color: isDarkMode ? themes.dark.text : themes.light.text,
+    maxWidth: '80%',
+    alignSelf: 'flex-start',
+    fontSize: getFontSize(),  // 使用字體大小函數
+    transition: 'all 0.3s ease'
+  };
+
+  const systemMessageStyle = {
+    ...messageStyle,
+    backgroundColor: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+    color: isDarkMode ? themes.dark.text : themes.light.text,
+    textAlign: 'center',
+    maxWidth: '100%',
+    margin: '10px 0',
+    fontSize: getFontSize(),  // 使用字體大小函數
+    fontStyle: 'italic'
+  };
 
   // 样式配置
   const currentTheme = isDarkMode ? themes.dark : themes.light;
@@ -349,28 +410,6 @@ function App() {
     color: chatBackground === 'default' ? currentTheme.text : '#333333',
     fontSize: fontSizes[fontSize].message,
     transition: 'all 0.3s ease'
-  };
-
-  const messageStyle = {
-    margin: '10px 0',
-    padding: '12px 16px',
-    backgroundColor: isDarkMode ? '#2d3748' : '#ffffff',
-    borderRadius: '10px',
-    boxShadow: '0 2px 5px rgba(0,0,0,0.05)',
-    transition: 'all 0.3s ease',
-    maxWidth: '80%'
-  };
-
-  const systemMessageStyle = {
-    margin: '10px auto',
-    padding: '8px 16px',
-    backgroundColor: isDarkMode ? 'rgba(66, 153, 225, 0.2)' : 'rgba(66, 153, 225, 0.1)',
-    color: isDarkMode ? '#90cdf4' : '#2b6cb0',
-    borderRadius: '20px',
-    fontSize: '0.9em',
-    textAlign: 'center',
-    maxWidth: '90%',
-    border: `1px solid ${isDarkMode ? 'rgba(66, 153, 225, 0.3)' : 'rgba(66, 153, 225, 0.2)'}`,
   };
 
   const formStyle = {
