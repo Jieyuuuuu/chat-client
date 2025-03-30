@@ -196,7 +196,27 @@ function App() {
            zIndex: 1000,
            boxShadow: '-2px 0 10px rgba(0,0,0,0.1)'
          }}>
-      <h3 style={{ color: isDarkMode ? themes.dark.text : themes.light.text }}>設置</h3>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        marginBottom: '20px'
+      }}>
+        <h3 style={{ color: isDarkMode ? themes.dark.text : themes.light.text }}>設置</h3>
+        <button
+          onClick={() => setIsSettingsOpen(false)}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '20px',
+            color: isDarkMode ? themes.dark.text : themes.light.text,
+            padding: '5px'
+          }}
+        >
+          ✕
+        </button>
+      </div>
       
       <div className="setting-item">
         <label>深色模式</label>
@@ -494,6 +514,26 @@ function App() {
           發送
         </button>
       </form>
+
+      <a 
+        href="https://github.com/Jieyuuuuu"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          position: 'absolute',
+          right: '10px',
+          bottom: '10px',
+          color: currentTheme.text,
+          textDecoration: 'none',
+          fontSize: '0.9em',
+          opacity: 0.7,
+          transition: 'opacity 0.3s ease'
+        }}
+        onMouseEnter={(e) => e.target.style.opacity = '1'}
+        onMouseLeave={(e) => e.target.style.opacity = '0.7'}
+      >
+        作者: Jieyu
+      </a>
     </div>
   );
 }
