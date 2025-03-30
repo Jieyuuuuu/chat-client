@@ -393,6 +393,13 @@ function App() {
           fontSize: fontSizes[fontSize].heading,
           color: currentTheme.text 
         }}>匿名聊天室</h2>
+        <div style={{ 
+          textAlign: 'center', 
+          marginBottom: '15px',
+          color: currentTheme.text
+        }}>
+          目前線上：{onlineCount} 人
+        </div>
         <label style={{ marginBottom: '5px', color: currentTheme.text }}>暱稱:</label>
         <input
           type="text"
@@ -429,112 +436,115 @@ function App() {
 
   // 聊天室页面
   return (
-    <div style={chatRoomStyle} className="chat-container">
-      <div style={headerStyle}>
-        <h2 style={{ 
-          margin: '0',
-          fontSize: fontSizes[fontSize].heading,
-          color: currentTheme.text 
-        }}>匿名聊天室</h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <div style={{ color: currentTheme.text }}>目前線上：{onlineCount} 人</div>
-          <button 
-            className="settings-button"
-            onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '24px',
-              color: currentTheme.text,
-              padding: '5px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            ⚙️
-          </button>
-        </div>
-      </div>
-      
-      <SettingsPanel />
-      
-      <div style={messagesContainerStyle}>
-        {messages.map((msg, index) => (
-          <div 
-            key={index} 
-            className="message message-bubble"
-            style={msg.type === 'system' ? systemMessageStyle : messageStyle}
-          >
-            {msg.type !== 'system' && (
-              <div style={{ 
-                fontWeight: 'bold',
-                marginBottom: '4px',
-                color: isDarkMode ? '#e2e8f0' : '#2d3748'
-              }}>{msg.user}</div>
-            )}
-            <div style={{
-              wordBreak: 'break-word',
-              lineHeight: '1.5'
-            }}>{msg.text}</div>
-            <div style={{
-              ...timestampStyle,
-              textAlign: msg.type === 'system' ? 'center' : 'right'
-            }}>{msg.timestamp}</div>
+    <>
+      <div style={chatRoomStyle} className="chat-container">
+        <div style={headerStyle}>
+          <h2 style={{ 
+            margin: '0',
+            fontSize: fontSizes[fontSize].heading,
+            color: currentTheme.text 
+          }}>匿名聊天室</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+            <div style={{ color: currentTheme.text }}>目前線上：{onlineCount} 人</div>
+            <button 
+              className="settings-button"
+              onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '24px',
+                color: currentTheme.text,
+                padding: '5px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              ⚙️
+            </button>
           </div>
-        ))}
-        <div ref={messagesEndRef} />
+        </div>
+        
+        <SettingsPanel />
+        
+        <div style={messagesContainerStyle}>
+          {messages.map((msg, index) => (
+            <div 
+              key={index} 
+              className="message message-bubble"
+              style={msg.type === 'system' ? systemMessageStyle : messageStyle}
+            >
+              {msg.type !== 'system' && (
+                <div style={{ 
+                  fontWeight: 'bold',
+                  marginBottom: '4px',
+                  color: isDarkMode ? '#e2e8f0' : '#2d3748'
+                }}>{msg.user}</div>
+              )}
+              <div style={{
+                wordBreak: 'break-word',
+                lineHeight: '1.5'
+              }}>{msg.text}</div>
+              <div style={{
+                ...timestampStyle,
+                textAlign: msg.type === 'system' ? 'center' : 'right'
+              }}>{msg.timestamp}</div>
+            </div>
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
+        
+        <form onSubmit={handleSendMessage} style={formStyle}>
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage(e);
+              }
+            }}
+            placeholder="輸入訊息..."
+            style={{
+              ...inputStyle,
+              height: '40px'
+            }}
+          />
+          <button type="submit" style={{
+            ...buttonStyle,
+            height: '40px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            發送
+          </button>
+        </form>
       </div>
-      
-      <form onSubmit={handleSendMessage} style={formStyle}>
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-              handleSendMessage(e);
-            }
-          }}
-          placeholder="輸入訊息..."
-          style={{
-            ...inputStyle,
-            height: '40px'
-          }}
-        />
-        <button type="submit" style={{
-          ...buttonStyle,
-          height: '40px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          發送
-        </button>
-      </form>
 
       <a 
         href="https://github.com/Jieyuuuuu"
         target="_blank"
         rel="noopener noreferrer"
         style={{
-          position: 'absolute',
-          right: '10px',
-          bottom: '10px',
+          position: 'fixed',
+          right: '20px',
+          bottom: '20px',
           color: currentTheme.text,
           textDecoration: 'none',
           fontSize: '0.9em',
           opacity: 0.7,
-          transition: 'opacity 0.3s ease'
+          transition: 'opacity 0.3s ease',
+          zIndex: 1000
         }}
         onMouseEnter={(e) => e.target.style.opacity = '1'}
         onMouseLeave={(e) => e.target.style.opacity = '0.7'}
       >
         作者: Jieyu
       </a>
-    </div>
+    </>
   );
 }
 
