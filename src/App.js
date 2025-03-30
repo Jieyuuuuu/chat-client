@@ -116,11 +116,16 @@ function App() {
         type: 'system'
       }]);
     });
+
+    socket.on('online count', (count) => {
+      setOnlineCount(count);
+    });
     
     return () => {
       socket.off('receiveMessage');
       socket.off('userJoined');
       socket.off('userLeft');
+      socket.off('online count');
     };
   }, [soundEnabled]);
 
@@ -532,7 +537,7 @@ function App() {
           position: 'fixed',
           right: '20px',
           bottom: '20px',
-          color: currentTheme.text,
+          color: '#000000',
           textDecoration: 'none',
           fontSize: '0.9em',
           opacity: 0.7,
